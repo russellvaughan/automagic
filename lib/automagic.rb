@@ -1,16 +1,52 @@
 require 'csv'
 require 'i18n'
 
-def import(csv)
-  @csv = CSV.read(csv)
-  @headers = @csv.first
+def read_csv(csv)
+@csv = CSV.read(csv)
+  if @csv[0][0].include?(";")
+  @csv = @csv.map { |row| row =  row[0].split(",") }
+  convert_seperation(@csv)
+  normalise(@csv)
+  end
+end
+
+def convert_seperation(csv)
+x = 1
+@array = []
+@csv.map do  |row|
+@new_row = row.map{|x| x.gsub(";",",")} unless x.nil?
+@array<<@new_row.split(",")
+end
+puts x
+x+=1
+@csv = @array
+end
+
+
+def normalise(csv)
+I18n.available_locales = [:en]
+x = 1
+@object = []
+csv.map do |row|
+@normalised_row = row.map {|word| I18n.transliterate(word) unless word.nil?}
+puts x
+@object << @normalised_row
+x+=1
+end
+@csv = @object
+end
+
+
+
+def trim_headers(csv)
+  @headers = csv.first
   @headers.pop while @headers.last.nil? && @headers.size>0
 end
 
-def map_data
+def map_data(csv)
   @data = {}
   x = 0
-  @csv.each do |row|
+  csv.each do |row|
    @properties = {}
    row.length.times do |number|
     @headers.length.times do |num|
@@ -23,15 +59,18 @@ end
 end
 
 def preview
-6.times do |x| 
+@preview = []
+6.times do |x|
 @preview << @data[x]
-end 
+end
 @preview.slice!(0)
 end
 
 def normalise(csv)
-@object = [] 
-@csv.each do |line|
+
+I18n.available_locales = [:en]
+@object = []
+csv.each do |line|
 @array = line.map do |object|
 unless object.nil?
 I18n.transliterate(object)
@@ -39,6 +78,7 @@ end
 end
 @object << @array
 end
+@csv = @object
 end
 
 
