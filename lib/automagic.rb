@@ -1,4 +1,5 @@
 require 'csv'
+require 'i18n'
 
 def import(csv)
   @csv = CSV.read(csv)
@@ -21,26 +22,25 @@ def map_data
 end
 end
 
+def preview
+6.times do |x| 
+@preview << @data[x]
+end 
+@preview.slice!(0)
+end
 
- gs.tracking.identify({
-  person_id: "email:user@test.com", # Required
+def normalise(csv)
+@object = [] 
+@csv.each do |line|
+@array = line.map do |object|
+unless object.nil?
+I18n.transliterate(object)
+end
+end
+@object << @array
+end
+end
 
-  # Reserved property names
-  properties: {
-    name: "Test User",
-    username: "testuser",
-    phone: "+44123456789",
-    created_at:"2016-06-07T15:44:20Z", # ISO 8601 formatted String
-    company_name:"GoSquared",
-    company_industry:"Customer Analytics",
-    company_size: 15000,
-
-    # Custom properties
-    custom: {
-      # custom_property_name: "custom property value"  # You can track as many custom properties as you like
-    }
-  }
-  })
 
  def  match_standard_props
   @headers.each do |header|
