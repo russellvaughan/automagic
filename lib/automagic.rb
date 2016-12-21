@@ -1,12 +1,16 @@
 require 'csv'
 require 'i18n'
+require 'json'
+require_relative 'col_sep_sniffer.rb'
 
 def read_csv(csv)
-@csv = CSV.read(csv)
-  if @csv[0][0].include?(";")
-  @csv = @csv.map { |row| row =  row[0].split(",") }
-  convert_seperation(@csv)
-  normalise(@csv)
+@csv = CSV.read(csv, encoding: "ISO8859-1:utf-8")
+  if @csv[0].length > 1
+    if ColSepSniffer.find(csv) != ","
+    @csv = @csv.map { |row| row =  row[0].split(",") }
+    convert_seperation(@csv)
+    normalise(@csv)
+    end
   end
 end
 
@@ -15,7 +19,7 @@ x = 1
 @array = []
 @csv.map do  |row|
 @new_row = row.map{|x| x.gsub(";",",")} unless x.nil?
-@array<<@new_row.split(",")
+@array<<@new_row[0].split(",")
 end
 puts x
 x+=1
@@ -37,20 +41,19 @@ end
 end
 
 
-
-def trim_headers(csv)
-  @headers = csv.first
+def trim_headers
+  @headers = @csv.first
   @headers.pop while @headers.last.nil? && @headers.size>0
 end
 
-def map_data(csv)
+def map_data
   @data = {}
   x = 0
-  csv.each do |row|
+  @csv.each do |row|
    @properties = {}
    row.length.times do |number|
     @headers.length.times do |num|
-      @properties[@headers[num]] = row[num]
+      @properties[@headers[num].strip] = row[num].strip unless row[num].nil?
     end
   end
   @data[x]=@properties
@@ -64,10 +67,10 @@ def preview
 @preview << @data[x]
 end
 @preview.slice!(0)
+@preview.to_json
 end
 
 def normalise(csv)
-
 I18n.available_locales = [:en]
 @object = []
 csv.each do |line|
@@ -82,7 +85,7 @@ end
 end
 
 
- def  match_standard_props
+ def match_standard_props
   @headers.each do |header|
     @property_fields.each do |property|
       if header.downcase == property
@@ -101,31 +104,66 @@ end
   # end
 
 
-      # properties = {}
-      # hash[x].each do | key, value |
-      #   property_fields.each do | property |
-      #     if key === property
-      #       properties[key] = value
-      #       properties['custom'] = @custom_props
-      #       properties['totals'] = @totals
-      #     end
-      #   end
-#       # end
+      @data.length.times do | num |
+             @properties={}
+      @custom_properties={}
+      @data[1].each do | key, value |
+        puts "key before #{key}"
+        key = match_name(key) unless match_name(key).nil?
+        key = match_email(key) unless match_email(key).nil?
+         key = match_last_name(key) unless match_last_name(key).nil?
+        puts "key after #{key}"
+          if @standard_properties.include? key.downcase
+            "matched this key #{key}"
+            @properties[key] = value
+            "put this #{key} in props"
+          else
+            @custom_properties[key] = value
+          end
+        end
 
-@standard_properties = ['id', 'email', 'name', 'first_name', 'last_name', 'user_name', 'phone', 'created_at']
-# csv = CSV.read('dummy_data.csv')
-# properties = {}
-# hash = []
+        end
 
 
-# values = csv[1]
-# x = 0
-# standard_properties.each  do |property|
-# properties[property]  = values[x]
-# x+=1
-# hash << properties
+
+
+
+
+
+# @standard_properties = ['id', 'email', 'name', 'first_name', 'last_name', 'user_name', 'phone', 'created_at']
+
+# FIRST_NAMES_ALIASES=['first_name', 'First Name', ‘FirstName’]
+# EMAIL_ALIASES=['Email', 'Email Address', 'EmailAddress’]
+# LAST_NAMES_ALIASES=['last_name', 'Last Name', ‘LastName', 'Last name' ]
+# USERNAME_ALIASES=['username', ‘user_name', 'UserName’ ]
+
+# def match_first_name(key)
+# re = Regexp.union(FIRST_NAMES_ALIASES)
+# key.match(re)
+# if key.match(re)
+# key = 'first_name'
+# else
+# key
+# end
 # end
 
+# def match_email(key)
+# re = Regexp.union(EMAIL_ALIASES)
+# key.match(re)
+# if key.match(re)
+# key = 'email'
+# else
+# key
+# end
 # end
 
+# def match_last_name(key)
+# re = Regexp.union(LAST_NAME_ALIASES)
+# key.match(re)
+# if key.match(re)
+# key = 'last_name'
+# else
+# key
 # end
+# end
+
