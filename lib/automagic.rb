@@ -108,15 +108,11 @@ end
              @properties={}
       @custom_properties={}
       @data[1].each do | key, value |
-        puts "key before #{key}"
         key = match_name(key) unless match_name(key).nil?
         key = match_email(key) unless match_email(key).nil?
          key = match_last_name(key) unless match_last_name(key).nil?
-        puts "key after #{key}"
           if @standard_properties.include? key.downcase
-            "matched this key #{key}"
             @properties[key] = value
-            "put this #{key} in props"
           else
             @custom_properties[key] = value
           end
