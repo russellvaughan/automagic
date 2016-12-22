@@ -114,26 +114,6 @@ STANDARD_PROPS = ['id', 'email', 'name', 'first_name', 'last_name', 'user_name',
     end
   end
 
-  def match_first_name(key)
-  first_name_reg =/^first_name$|^First\ Name$|^firstname$/i
-  key.match(first_name_reg) ? key = 'first_name' : key
-  end
-
-  def match_email(key)
-  email_reg =/^emailaddress$|^email\ address$|^email_address$|email/i
-  key.match(email_reg) ? key = 'email' : key
-  end
-
-  def match_last_name(key)
-  last_name_reg =/^last_name$|^Last\ Name$|^LastName$/i
-  key.match(last_name_reg) ? key = 'last_name' : key
-  end
-
-  def match_username(key)
-  username_reg =/^username$|^user_name$|^UserName$/i
-  key.match(username_reg) ? key = 'username' : key
-  end
-
   def post_data
     @failed = []
     puts "props: #{@properties}"
