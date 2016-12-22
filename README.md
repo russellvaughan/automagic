@@ -1,6 +1,6 @@
 ## Ruby CSV Importer
 
-A CSV Importer for importing user data to a GoSquared site
+A CSV Importer for importing user data to a GoSquared project's People Dashboard
 
 ### Setup
 
