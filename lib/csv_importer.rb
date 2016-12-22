@@ -4,7 +4,20 @@ require 'json'
 require 'gosquared'
 require_relative 'col_sep_sniffer.rb'
 
-@failed = []
+class CsvImporter
+
+def initialize(api_key, site_token)
+@api_key = api_key
+@site_token = site_token
+end
+
+def import_csv(csv)
+read_csv(csv)
+trim_headers
+map_data
+segment_properties
+end
+
 
 def read_csv(csv)
   @csv = CSV.read(csv, encoding: "ISO8859-1:utf-8")
@@ -24,7 +37,6 @@ def convert_seperation(csv)
     @new_row = row.map{|x| x.gsub(";",",")} unless x.nil?
     @array<<@new_row[0].split(",")
   end
-  puts x
   x+=1
   @csv = @array
 end
@@ -99,14 +111,6 @@ def match_standard_props
   end
 end
 
-
-
-  #   end
-  #   end
-  # end
-  # end
-  # end
-
   def segment_properties
     @all_entries = @data.length
     @data.each_with_index do |e, i|
@@ -167,9 +171,10 @@ end
 end
 
 def post_data
+  @failed = []
   puts "props: #{@properties}"
     puts "custom_props: #{@custom_properties}"
-gs = Gosquared::RubyLibrary.new('1F6DLEGZKZ2QUK48','GSN-747344-B')
+gs = Gosquared::RubyLibrary.new(@api_key, @site_token)
    gs.tracking.identify({
       "person_id": @properties['id'] ? @properties['id'] : @properties['email']  ,
       "properties": @properties,
@@ -191,4 +196,4 @@ gs = Gosquared::RubyLibrary.new('1F6DLEGZKZ2QUK48','GSN-747344-B')
 
 end
 
-
+end

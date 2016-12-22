@@ -1,0 +1,16 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    gosquared (3.0.2)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  gosquared
+
+RUBY VERSION
+   ruby 2.2.2p95
+
+BUNDLED WITH
+   1.12.5

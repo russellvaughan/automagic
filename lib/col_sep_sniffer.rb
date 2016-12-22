@@ -49,6 +49,6 @@ class ColSepSniffer
   end
 
   def file
-    @file ||= File.open(@path)
+    @file ||= File.open(@path, encoding: "ISO8859-1:utf-8")
   end
 end
