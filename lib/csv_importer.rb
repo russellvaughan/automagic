@@ -6,6 +6,8 @@ require_relative 'col_sep_sniffer.rb'
 
 class CsvImporter
 
+STANDARD_PROPS = ['id', 'email', 'name', 'first_name', 'last_name', 'user_name', 'phone', 'created_at']
+
 def initialize(api_key, site_token)
 @api_key = api_key
 @site_token = site_token
@@ -17,7 +19,6 @@ trim_headers
 map_data
 segment_properties
 end
-
 
 def read_csv(csv)
   @csv = CSV.read(csv, encoding: "ISO8859-1:utf-8")
@@ -41,20 +42,15 @@ def convert_seperation(csv)
   @csv = @array
 end
 
-
 def normalise(csv)
   I18n.available_locales = [:en]
-  x = 1
   @object = []
   csv.map do |row|
     @normalised_row = row.map {|word| I18n.transliterate(word) unless word.nil?}
-    puts x
     @object << @normalised_row
-    x+=1
   end
   @csv = @object
 end
-
 
 def trim_headers
   @headers = @csv.first
@@ -63,18 +59,15 @@ end
 
 def map_data
   @data = {}
-  x = 0
-  @csv.each do |row|
+  @csv.each_with_index do |row, index|
    @properties = {}
    row.length.times do |number|
-    @headers.length.times do |num|
-      @properties[@headers[num].strip] = row[num].strip unless row[num].nil?
+    @headers.each_with_index do |h, i|
+      @properties[@headers[i].strip] = row[i].strip unless row[i].nil?
     end
   end
-  @data[x]=@properties
-  x+=1
-end
-
+  @data[index]=@properties
+  end
 end
 
 def preview
@@ -101,16 +94,6 @@ def normalise(csv)
 end
 
 
-def match_standard_props
-  @headers.each do |header|
-    @property_fields.each do |property|
-      if header.downcase == property
-        @standard_props << header
-      end
-    end
-  end
-end
-
   def segment_properties
     @all_entries = @data.length
     @data.each_with_index do |e, i|
@@ -131,43 +114,24 @@ end
   end
 end
 
-
-
-STANDARD_PROPS = ['id', 'email', 'name', 'first_name', 'last_name', 'user_name', 'phone', 'created_at']
-
-FIRST_NAMES_ALIASES=['first_name', 'First Name', 'FirstName']
-EMAIL_ALIASES=['Email', 'Email Address', 'EmailAddress']
-LAST_NAMES_ALIASES=['last_name', 'Last Name', 'LastName', 'Last name' ]
-USERNAME_ALIASES=['username', 'user_name', 'UserName' ]
-
 def match_first_name(key)
-re = Regexp.union(FIRST_NAMES_ALIASES)
-key.match(re)
-if key.match(re)
-key = 'first_name'
-else
-key
-end
+first_name_reg =/^first_name$|^First\ Name$|^firstname$/i
+key.match(first_name_reg) ? key = 'first_name' : key
 end
 
 def match_email(key)
-re = Regexp.union(EMAIL_ALIASES)
-key.match(re)
-if key.match(re)
-key = 'email'
-else
-key
-end
+email_reg =/^emailaddress$|^email\ address$|^email_address$|email/i
+key.match(email_reg) ? key = 'email' : key
 end
 
 def match_last_name(key)
-re = Regexp.union(LAST_NAMES_ALIASES)
-key.match(re)
-if key.match(re)
-key = 'last_name'
-else
-key
+last_name_reg =/^last_name$|^Last\ Name$|^LastName$/i
+key.match(last_name_reg) ? key = 'last_name' : key
 end
+
+def match_username(key)
+username_reg =/^username$|^user_name$|^UserName$/i
+key.match(username_reg) ? key = 'username' : key
 end
 
 def post_data
@@ -180,7 +144,6 @@ gs = Gosquared::RubyLibrary.new(@api_key, @site_token)
       "properties": @properties,
       "custom": @custom_properties
       })
-
     begin
       response = gs.tracking.post
       @failed << "id = #{@properties['id']}" if response.code != '200'
@@ -193,7 +156,6 @@ gs = Gosquared::RubyLibrary.new(@api_key, @site_token)
     puts "failed entries #{@failed}"
     puts "#{@all_entries -= 1}"
     puts "Approx #{(@all_entries / 60)} minutes remaining"
-
 end
 
 end
