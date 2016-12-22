@@ -1,5 +1,7 @@
 ## Ruby CSV Importer
 
+A CSV Importer for importing user data to a GoSquared project's People Dashboard
+
 ### Setup
 
 ```ruby
@@ -14,4 +16,4 @@ csv_importer = CsvImporter.new('api_key', 'site_token')
 csv_importer.import_csv('path_to_csv')
 ```
 
-Watch Magic
+Then Watch The Magic Happen
