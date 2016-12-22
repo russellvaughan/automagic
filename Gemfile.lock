@@ -2,12 +2,14 @@ GEM
   remote: https://rubygems.org/
   specs:
     gosquared (3.0.2)
+    i18n (0.7.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   gosquared
+  i18n
 
 RUBY VERSION
    ruby 2.2.2p95
