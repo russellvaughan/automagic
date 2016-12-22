@@ -5,7 +5,6 @@ require 'gosquared'
 require_relative 'col_sep_sniffer.rb'
 require_relative 'standard_props_matcher.rb'
 
-
 class CsvImporter
 
 STANDARD_PROPS = ['id', 'email', 'name', 'first_name', 'last_name', 'user_name', 'phone', 'created_at']
@@ -80,21 +79,6 @@ STANDARD_PROPS = ['id', 'email', 'name', 'first_name', 'last_name', 'user_name',
     @preview.slice!(0)
     @preview.to_json
   end
-
-  def normalise(csv)
-    I18n.available_locales = [:en]
-    @object = []
-    csv.each do |line|
-      @array = line.map do |object|
-        unless object.nil?
-          I18n.transliterate(object)
-        end
-      end
-      @object << @array
-    end
-    @csv = @object
-  end
-
 
     def segment_properties
       @all_entries = @data.length
