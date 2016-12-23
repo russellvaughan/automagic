@@ -24,9 +24,9 @@ class CsvImporter
   def read_csv(csv)
     begin
       @csv = CSV.read(csv)
-    rescue ArgumentError, 'invalid byte sequence in UTF-8' => e
+    rescue ArgumentError
      @csv = CSV.read(csv, encoding: "ISO8859-1:utf-8")
-     if @csv[0].length > 1
+     if @csv[0].length >= 1
       if ColSepSniffer.find(csv) != ","
         @csv = @csv.map { |row| row =  row[0].split(",") }
         convert_seperation(@csv)
