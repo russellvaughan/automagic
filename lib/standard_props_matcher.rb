@@ -1,6 +1,5 @@
 class StandardPropsMatcher
 
-
   def self.match_key(key)
     @key = key
     match_first_name
@@ -9,13 +8,15 @@ class StandardPropsMatcher
     match_username
   end
 
+  private
+
   def self.match_first_name
     first_name_reg =/^first_name$|^First\ Name$|^firstname$/i
     @key.match(first_name_reg) ? @key = 'first_name' : @key
   end
 
   def self.match_email
-    email_reg =/^emailaddress$|^email\ address$|^email_address$|email/i
+    email_reg =/^emailaddress$|^email\ address$|^email_address$|^email$/i
     @key.match(email_reg) ? @key = 'email' : @key
   end
 
@@ -25,7 +26,7 @@ class StandardPropsMatcher
   end
 
   def self.match_username
-    username_reg =/^username$|^user_name$|^UserName$/i
+    username_reg =/^username$|^User\ Name$|^user_name$|^UserName$/i
     @key.match(username_reg) ? @key = 'username' : @key
   end
 
