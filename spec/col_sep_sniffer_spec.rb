@@ -2,7 +2,7 @@ describe ColSepSniffer do
   describe ".find" do
     subject(:find) { described_class.find(path) }
 
-    let(:path) { "./spec/fixtures/dummy_data.csv" }
+    let(:path) { "./spec/fixtures/comma.csv" }
 
     context "when , delimiter" do
       it "returns separator" do
@@ -11,20 +11,20 @@ describe ColSepSniffer do
     end
 
     context "when ; delimiter" do
-      let(:path) { "./spec/fixtures/comma.csv" }
+      let(:path) { "./spec/fixtures/semi-colon.csv" }
 
       it "returns separator" do
         expect(find).to eq(';')
       end
     end
 
-    # context "when | delimiter" do
-    #   let(:path) { "./spec/fixtures/google/products_with_bar_seperator.csv" }
+    context "when | delimiter" do
+      let(:path) { "./spec/fixtures/pipe.csv" }
 
-    #   it "returns separator" do
-    #     expect(find).to eq('|')
-    #   end
-    # end
+      it "returns separator" do
+        expect(find).to eq('|')
+      end
+    end
 
     context "when empty file" do
       it "raises error" do
