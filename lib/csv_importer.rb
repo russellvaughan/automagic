@@ -22,12 +22,16 @@ STANDARD_PROPS = ['id', 'email', 'name', 'first_name', 'last_name', 'user_name',
   end
 
   def read_csv(csv)
-    @csv = CSV.read(csv, encoding: "ISO8859-1:utf-8")
+    begin
+    @csv = CSV.read(csv)
+  rescue ArgumentError
+     @csv = CSV.read(csv, encoding: "ISO8859-1:utf-8")
     if @csv[0].length > 1
       if ColSepSniffer.find(csv) != ","
         @csv = @csv.map { |row| row =  row[0].split(",") }
         convert_seperation(@csv)
         normalise(@csv)
+      end
       end
     end
   end
@@ -94,6 +98,7 @@ STANDARD_PROPS = ['id', 'email', 'name', 'first_name', 'last_name', 'user_name',
           @custom_properties[key] = value
         end
       end
+      @properties['custom']= @custom_properties if @custom_properties
       post_data
     end
   end
@@ -104,9 +109,8 @@ STANDARD_PROPS = ['id', 'email', 'name', 'first_name', 'last_name', 'user_name',
     puts "custom_props: #{@custom_properties}"
     gs = Gosquared::RubyLibrary.new(@api_key, @site_token)
     gs.tracking.identify({
-        "person_id": @properties['id'] ? @properties['id'] : @properties['email']  ,
-        "properties": @properties,
-        "custom": @custom_properties
+        person_id: @properties['id'] ? @properties['id'] : @properties['email'],
+        properties: @properties
         })
     begin
       response = gs.tracking.post
