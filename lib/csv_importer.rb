@@ -27,7 +27,7 @@ class CsvImporter
     rescue ArgumentError
      @csv = CSV.read(csv, encoding: "ISO8859-1:utf-8")
    end
-    if @csv.length >= 1
+    unless @csv[0].length <= 1
      if ColumnSeparatorFinder.find(csv) != ","
        convert_seperation(@csv)
        normalise(@csv)
