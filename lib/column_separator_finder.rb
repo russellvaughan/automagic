@@ -18,7 +18,6 @@ class ColumnSeparatorFinder
 
   def find
     fail EmptyFile unless first
-
     if valid?
       delimiters[0][0][1]
     else
@@ -51,4 +50,12 @@ class ColumnSeparatorFinder
   def file
     @file ||= File.open(@path, encoding: "ISO8859-1:utf-8")
   end
+
+  def file_length
+    File.open(@path) do  |f|
+    @count = f.read.count("\n")
+    end
+    return true if @count <= 1
+  end
+
 end

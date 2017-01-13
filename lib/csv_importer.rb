@@ -22,21 +22,23 @@ class CsvImporter
   end
 
   def read_csv(csv)
-    begin
-      @csv = CSV.read(csv)
+   begin
+     @csv = CSV.read(csv)
     rescue ArgumentError
      @csv = CSV.read(csv, encoding: "ISO8859-1:utf-8")
-     if @csv[0].length >= 1
-      if ColumnSeparatorFinder.find(csv) != ","
-        @csv = @csv.map { |row| row =  row[0].split(",") }
-        convert_seperation(@csv)
-        normalise(@csv)
-      end
-    end
-  end
-end
+   end
+    if @csv.length >= 1
+     if ColumnSeparatorFinder.find(csv) != ","
+       convert_seperation(@csv)
+       normalise(@csv)
+     end
+   end
+   @csv
+ end
 
-def convert_seperation(csv)
+
+ def convert_seperation(csv)
+  @csv = csv.map { |row| row = row[0].split(",") }
   x = 1
   @array = []
   @csv.map do  |row|
