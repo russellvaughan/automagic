@@ -1,4 +1,4 @@
-class ColSepSniffer
+class ColumnSeparatorFinder
   NoColumnSeparatorFound = Class.new(StandardError)
   EmptyFile = Class.new(StandardError)
 

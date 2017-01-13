@@ -1,4 +1,4 @@
-describe ColSepSniffer do
+describe ColumnSeparatorFinder do
   describe ".find" do
     subject(:find) { described_class.find(path) }
 

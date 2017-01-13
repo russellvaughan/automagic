@@ -2,7 +2,7 @@ require 'i18n'
 require 'csv'
 require 'json'
 require 'gosquared'
-require_relative 'col_sep_sniffer.rb'
+require_relative 'column_separator_finder.rb'
 require_relative 'standard_props_matcher.rb'
 
 class CsvImporter
@@ -27,7 +27,7 @@ class CsvImporter
     rescue ArgumentError
      @csv = CSV.read(csv, encoding: "ISO8859-1:utf-8")
      if @csv[0].length >= 1
-      if ColSepSniffer.find(csv) != ","
+      if ColumnSeparatorFinder.find(csv) != ","
         @csv = @csv.map { |row| row =  row[0].split(",") }
         convert_seperation(@csv)
         normalise(@csv)
